@@ -1,1 +1,1 @@
-# manufactured-homess
+# manufactured-homes
