@@ -1,4 +1,6 @@
 import re
+import pandas as pd
+import os
 
 def get_kv_pairs(response):
     kv_pairs = {}
@@ -120,4 +122,44 @@ def process_textract_output(response):
     full_text = " ".join([block.get("Text", "") for block in response["Blocks"] if block["BlockType"] == "LINE"])
     data["Sale/Transfer Info"] = extract_sale_info(full_text)
 
+    print(data)
     return data
+
+
+def flatten_data(data):
+    "Flattens the nested data structure of serial deatils + sale transfer info"
+    flattened_data = {}
+    flattened_data.update(data)
+    serial_details = data.get("serial_details", [])
+    if serial_details:
+        for i, serial in enumerate(serial_details):
+            flattened_data[f"Serial Number {i+1}"] = serial.get("Serial Number", "")
+            flattened_data[f"HUD Label/Insignia {i+1}"] = serial.get("HUD Label/Insignia", "")
+            flattened_data[f"Length {i+1}"] = serial.get("Length", "")
+            flattened_data[f"Width {i+1}"] = serial.get("Width", "")
+    else:
+        flattened_data.update({
+            "Serial Number 1": "",
+            "HUD Label/Insignia 1": "",
+            "Length 1": "",
+            "Width 1": ""
+        })
+    sale_info = data.get("Sale/Transfer Info", {})
+    flattened_data["Price"] = sale_info.get("Price", "")
+    flattened_data["Transferred On"] = sale_info.get("Transferred On", "")
+    flattened_data.pop("serial_details", None)
+    flattened_data.pop("Sale/Transfer Info", None)
+    return flattened_data
+
+
+def data_to_csv(data, file_path="processed_data.csv"):
+    """Puts extracted textract data into a csv file"""
+    flattened_data = flatten_data(data)
+    data_df = pd.DataFrame([flattened_data])
+    data_df["Price"] = data_df["Price"].str.replace(r'[$,]', '', regex=True).astype(float)
+    if os.path.exists(file_path):
+        data_df.to_csv(file_path, mode='a', header=False, index=False)
+    else:
+        data_df.to_csv(file_path, mode='w', header=True, index=False)
+    print(f"Data has been saved to {file_path}")
+    return data_df
