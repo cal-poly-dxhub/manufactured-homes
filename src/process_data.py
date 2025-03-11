@@ -1,6 +1,7 @@
 import re
 import pandas as pd
 import os
+from custom_queries import process_text_analysis
 
 def get_kv_pairs(response):
     kv_pairs = {}
@@ -80,11 +81,12 @@ def extract_sale_info(text):
 
 # Process Textract response
 def process_textract_output(response):
-    kv_pairs = get_kv_pairs(response)
-    tables = get_table_data(response)
-
-    print(kv_pairs)
     
+    tables = get_table_data(response)
+    '''
+    kv_pairs = get_kv_pairs(response)
+
+
     # Extract key details
     data = {
         "Decal #": kv_pairs.get("Decal #:", ""),
@@ -100,14 +102,18 @@ def process_textract_output(response):
     record_conditions = kv_pairs.get("Record Conditions:", "")
     if "Permanent Foundation -" in kv_pairs:
         data["Record Conditions"] = "Permanent Foundation - " + kv_pairs.get("Record Conditions:")
+        '''
 
     
 
     # Extract serial number table
+    data={}
+
     serial_info = []
+    print(tables)
     if tables:
         for row in tables:  
-            if row[0] == ['Serial Number', 'HUD Label / Insignia', 'Length', 'Width']:
+            if 'Serial Number' in row[0]:
                 for i in range(1,len(row)):
                     serial_info.append({
                         "Serial Number": row[i][0],
@@ -120,11 +126,10 @@ def process_textract_output(response):
 
     # Extract sale/transfer info
     full_text = " ".join([block.get("Text", "") for block in response["Blocks"] if block["BlockType"] == "LINE"])
-    data["Sale/Transfer Info"] = extract_sale_info(full_text)
+    #data["Sale/Transfer Info"] = extract_sale_info(full_text)
+    #print(data)
 
-    print(data)
     return data
-
 
 def flatten_data(data):
     "Flattens the nested data structure of serial deatils + sale transfer info"

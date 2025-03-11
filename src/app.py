@@ -4,6 +4,7 @@ import os
 import json
 from textract_utils import extract_text_from_pdf
 from process_data import process_textract_output, data_to_csv
+from custom_queries import process_text_analysis
 
 # Streamlit UI
 st.title("🏠 PDF Data Extractor with AWS Textract")
@@ -23,7 +24,10 @@ if uploaded_files:
                 tmp_file.write(uploaded_file.read())
                 temp_file_path = tmp_file.name
             response = extract_text_from_pdf(temp_file_path)
-            extracted_data = process_textract_output(response)
+            extracted_table_data = process_textract_output(response)
+            extracted_data = process_text_analysis(temp_file_path)
+
+            extracted_data.update(extracted_table_data)
 
             st.subheader(f"Extracted Information from PDF: {uploaded_file.name}")
             st.json(extracted_data)
