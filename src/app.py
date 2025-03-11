@@ -26,7 +26,6 @@ if uploaded_files:
             response = extract_text_from_pdf(temp_file_path)
             extracted_table_data = process_textract_output(response)
             extracted_data = process_text_analysis(temp_file_path)
-
             extracted_data.update(extracted_table_data)
 
             st.subheader(f"Extracted Information from PDF: {uploaded_file.name}")
@@ -45,7 +44,7 @@ if uploaded_files:
             st.write(csv_data)
 
     # user can download csv at the end
-    file_path = "processed_data.csv"  
+    file_path = "output.csv"  
     data_to_csv(extracted_data, file_path)
     with open(file_path, "rb") as f:
         st.download_button(
@@ -56,7 +55,9 @@ if uploaded_files:
             key="download_updated_csv"
         )
     
-    st.success("CSV has been updated with PDF data!")
+    if os.path.exists(file_path):
+        os.remove(file_path)
+    st.success("CSV has been updated with PDF data and deleted after download!")
     
     #TODO: take in user's csv and append to their csv
 
