@@ -131,47 +131,30 @@ def process_textract_output(response):
 
     return data
 
-def data_to_csv(data, csv_filename="output.csv"):
-
-    sale_info = data.get("Sale/Transfer Info", "")
-    if isinstance(sale_info, str):
-        sale_info = sale_info.split("Transferred on ")
-    else:
-        sale_info = [""]
-
-    sale_price = sale_info[0].replace("Price $", "").strip() if sale_info else ""
-    transfer_date = sale_info[1] if len(sale_info) > 1 else ""
-    
+def data_to_csv(data_list, csv_filename="output.csv"):
+    """takes in a list of json objects and csv name and writes info to csv file"""
     headers = [
         "Decal #", "Manufacturer", "Model", "Manufactured Date", "First Sold Date",
         "Record Conditions", "Last Reported Registered Owner", "Sale Price", "Transfer Date",
         "Situs Address", "Serial Number", "HUD Label/Insignia", "Length", "Width"
     ]
-    
-    serials = data.get("serial_details", [])
-    
-    with open(csv_filename, mode="a", newline="", encoding="utf-8") as file:
+    with open(csv_filename, mode="w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
-        # check if file is empty
         if file.tell() == 0:
             writer.writerow(headers)
-        # accounting for serials info
-        if not serials: 
-            writer.writerow([
-                data.get("Decal #", ""),
-                data.get("Manufacturer", ""),
-                data.get("Model", ""),
-                data.get("Manufactured Date", ""),
-                data.get("First Sold Date", ""),
-                data.get("Record Conditions", ""),
-                data.get("Last Reported Registered Owner", ""),
-                sale_price,
-                transfer_date,
-                data.get("Situs Address", ""),
-                "", "", "", "" 
-            ])
-        else:
-            for serial in serials:
+
+        for data in data_list:
+            sale_info = data.get("Sale/Transfer Info", "")
+            if isinstance(sale_info, str):
+                sale_info = sale_info.split("Transferred on ")
+            else:
+                sale_info = [""]
+
+            sale_price = sale_info[0].replace("Price $", "").strip() if sale_info else ""
+            transfer_date = sale_info[1] if len(sale_info) > 1 else ""
+
+            serials = data.get("serial_details", [])
+            if not serials: 
                 writer.writerow([
                     data.get("Decal #", ""),
                     data.get("Manufacturer", ""),
@@ -183,10 +166,25 @@ def data_to_csv(data, csv_filename="output.csv"):
                     sale_price,
                     transfer_date,
                     data.get("Situs Address", ""),
-                    serial.get("Serial Number", ""),
-                    serial.get("HUD Label/Insignia", ""),
-                    serial.get("Length", ""),
-                    serial.get("Width", "")
+                    "", "", "", "" 
                 ])
+            else:
+                for serial in serials:
+                    writer.writerow([
+                        data.get("Decal #", ""),
+                        data.get("Manufacturer", ""),
+                        data.get("Model", ""),
+                        data.get("Manufactured Date", ""),
+                        data.get("First Sold Date", ""),
+                        data.get("Record Conditions", ""),
+                        data.get("Last Reported Registered Owner", ""),
+                        sale_price,
+                        transfer_date,
+                        data.get("Situs Address", ""),
+                        serial.get("Serial Number", ""),
+                        serial.get("HUD Label/Insignia", ""),
+                        serial.get("Length", ""),
+                        serial.get("Width", "")
+                    ])
 
     print(f"CSV file '{csv_filename}' has been updated successfully.")
