@@ -109,7 +109,6 @@ def process_textract_output(response):
     data={}
 
     serial_info = []
-    print(tables)
     if tables:
         for row in tables:  
             if 'Serial Number' in row[0]:
@@ -126,8 +125,6 @@ def process_textract_output(response):
     # Extract sale/transfer info
     full_text = " ".join([block.get("Text", "") for block in response["Blocks"] if block["BlockType"] == "LINE"])
     #data["Sale/Transfer Info"] = extract_sale_info(full_text)
-    print("this is the data")
-    print(data)
 
     return data
 
@@ -136,7 +133,8 @@ def data_to_csv(data_list, csv_filename="output.csv"):
     headers = [
         "Decal #", "Manufacturer", "Model", "Manufactured Date", "First Sold Date",
         "Record Conditions", "Last Reported Registered Owner", "Sale Price", "Transfer Date",
-        "Situs Address", "Serial Number", "HUD Label/Insignia", "Length", "Width"
+        "Situs Address", "Serial Number 1", "HUD Label/Insignia 1", "Length 1", "Width 1",
+        "Serial Number 2", "HUD Label/Insignia 2", "Length 2", "Width 2"
     ]
     with open(csv_filename, mode="w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
@@ -166,25 +164,31 @@ def data_to_csv(data_list, csv_filename="output.csv"):
                     sale_price,
                     transfer_date,
                     data.get("Situs Address", ""),
-                    "", "", "", "" 
+                    "", "", "", "","", "", "", ""
                 ])
             else:
-                for serial in serials:
-                    writer.writerow([
-                        data.get("Decal #", ""),
-                        data.get("Manufacturer", ""),
-                        data.get("Model", ""),
-                        data.get("Manufactured Date", ""),
-                        data.get("First Sold Date", ""),
-                        data.get("Record Conditions", ""),
-                        data.get("Last Reported Registered Owner", ""),
-                        sale_price,
-                        transfer_date,
-                        data.get("Situs Address", ""),
-                        serial.get("Serial Number", ""),
-                        serial.get("HUD Label/Insignia", ""),
-                        serial.get("Length", ""),
-                        serial.get("Width", "")
-                    ])
+                
+                writer.writerow([
+                data.get("Decal #", ""),
+                data.get("Manufacturer", ""),
+                data.get("Model", ""),
+                data.get("Manufactured Date", ""),
+                data.get("First Sold Date", ""),
+                data.get("Record Conditions", ""),
+                data.get("Last Reported Registered Owner", ""),
+                sale_price,
+                transfer_date,
+                data.get("Situs Address", ""),
+                serials[0].get("Serial Number", ""),
+                serials[0].get("HUD Label/Insignia", ""),
+                serials[0].get("Length", ""),
+                serials[0].get("Width", ""),
+                serials[1].get("Serial Number", ""),
+                serials[1].get("HUD Label/Insignia", ""),
+                serials[1].get("Length", ""),
+                serials[1].get("Width", "")
+                ])
+
+                    
 
     print(f"CSV file '{csv_filename}' has been updated successfully.")
