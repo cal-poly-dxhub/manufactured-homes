@@ -110,6 +110,7 @@ def process_textract_output(response):
 
     serial_info = []
     if tables:
+        print(tables)
         for row in tables:  
             if 'Serial Number' in row[0]:
                 for i in range(1,len(row)):

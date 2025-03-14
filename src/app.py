@@ -19,17 +19,30 @@ all_extracted_data = []
 
 def extract_zip(zip_file):
     """Extracts the ZIP file to a temporary directory and returns the list of extracted PDF files."""
-    tmpdir = tempfile.mkdtemp()  # Manually create a temporary directory
+    tmpdir = tempfile.mkdtemp()  # Create a temporary directory
     
     with zipfile.ZipFile(zip_file, 'r') as zip_ref:
         zip_ref.extractall(tmpdir)
-        
-    # Return only PDF files in the directory
-    pdf_files = [os.path.join(tmpdir, f) for f in os.listdir(tmpdir) if f.endswith('.pdf')]
+        extracted_files = os.listdir(tmpdir)  # List files at the root level
+        st.write(f"Extracted files: {extracted_files}")  # Print files for debugging
+
+    # Walk through all files (including those in subdirectories) and find PDFs
+    pdf_files = []
+    for root, dirs, files in os.walk(tmpdir):  # Walk through directories
+        for f in files:
+            # Skip system files (like __MACOSX and '._' files) and check for PDFs
+            if not f.startswith('__MACOSX') and not f.startswith('._') and f.lower().endswith('.pdf'):
+                pdf_files.append(os.path.join(root, f))  # Add full path to PDF list
+
+    # Log all PDFs that were found
+    st.write(f"PDF files found: {pdf_files}")  # Display PDFs for debugging
+    
     if not pdf_files:
         raise ValueError("No PDF files found in the ZIP archive.")
     
     return pdf_files, tmpdir
+
+
     
 if uploaded_files:
     st.write("📄 Processing documents...")
