@@ -3,6 +3,7 @@ import tempfile
 import os
 import pandas as pd
 import csv
+import zipfile
 from textract_utils import extract_text_from_pdf
 from process_data import process_textract_output, data_to_csv
 from custom_queries import process_text_analysis
@@ -11,11 +12,25 @@ from custom_queries import process_text_analysis
 st.title("🏠 PDF Data Extractor with AWS Textract")
 st.write("Upload your PDF documents, and we will extract structured data, format it into a CSV, and prepare it for download.")
 
-uploaded_files = st.file_uploader("Please choose PDF files to process", type=["pdf"], accept_multiple_files=True, key="file_uploader")
+uploaded_files = st.file_uploader("Please choose PDF files to process", type=["pdf","zip"], accept_multiple_files=True, key="file_uploader")
 
 # list of json data from pdf's
 all_extracted_data = []
 
+def extract_zip(zip_file):
+    """Extracts the ZIP file to a temporary directory and returns the list of extracted PDF files."""
+    tmpdir = tempfile.mkdtemp()  # Manually create a temporary directory
+    
+    with zipfile.ZipFile(zip_file, 'r') as zip_ref:
+        zip_ref.extractall(tmpdir)
+        
+    # Return only PDF files in the directory
+    pdf_files = [os.path.join(tmpdir, f) for f in os.listdir(tmpdir) if f.endswith('.pdf')]
+    if not pdf_files:
+        raise ValueError("No PDF files found in the ZIP archive.")
+    
+    return pdf_files, tmpdir
+    
 if uploaded_files:
     st.write("📄 Processing documents...")
 
@@ -54,6 +69,33 @@ if uploaded_files:
             st.write(f"Processing CSV document: {uploaded_file.name}...")
             st.subheader(f"Extracted Information from CSV: {uploaded_file.name}")
             st.write(csv_data)
+        
+        elif file_extension == 'zip':
+            # Process ZIP file
+            st.write(f"Processing ZIP document: {uploaded_file.name}...")
+            zip_file_paths, tmpdir = extract_zip(uploaded_file)
+
+            for pdf_path in zip_file_paths:
+                # st.write(f"Found PDF file: {pdf_path}")
+                
+                response = extract_text_from_pdf(pdf_path)
+                extracted_table_data = process_textract_output(response)
+                extracted_data = process_text_analysis(pdf_path)
+                extracted_data.update(extracted_table_data)
+                all_extracted_data.append(extracted_data)
+
+                # Display JSON info in a well-formatted way
+                with st.expander(f"📄 Extracted Data from {pdf_path}"):
+                    for key, value in extracted_data.items():
+                        if key == "serial_details" and isinstance(value, list):
+                            st.write(f"### 📋 {key.replace('_', ' ').title()}")
+                            if value:  
+                                serial_df = pd.DataFrame(value)
+                                st.dataframe(serial_df)
+                            else:
+                                st.write("No serial details available.")
+                        else:
+                            st.write(f"**{key}:** {value}")
 
     if all_extracted_data:
         file_path = "output.csv"
