@@ -38,6 +38,10 @@ def process_text_analysis(path):
             {"Text": "Model"},
             {"Text": "Manufactured Date"},
             {"Text": "First Sold Date"},
+            {"Text": "Serial Number"},
+            {"Text": "HUD Label/Insignia"},
+            {"Text": "Length"},
+            {"Text": "Width"},
             {"Text": "Record Conditions"},
             {"Text": "Last Reported Registered Owner"},
             {"Text": "Sale/Transfer Info"},
@@ -56,8 +60,8 @@ def process_text_analysis(path):
             AdaptersConfig={
                 "Adapters":[
                     {
-                        "AdapterId": "b33530ccb8d5",
-                        "Version":"1",
+                        "AdapterId": "e7ec49a23ce4",
+                        "Version":"2",
                     }
                 ]
             },
@@ -66,13 +70,21 @@ def process_text_analysis(path):
 
     # Parse the Textract response
     blocks = response['Blocks']
-    print('Detected Document Text')
 
-    kvPairs = {}
+    kvPairs = {
+        "Serial Number": [],
+        "HUD Label/Insignia": [],
+        "Length": [],
+        "Width": []
+    }
+
+    #print('Detected Document Text')
+
+    
     for block in blocks:
         if block['BlockType'] == 'QUERY':
-            print('-' * 50)
-            print(f"Query: {block['Query']['Text']}")
+            #print('-' * 50)
+            #print(f"Query: {block['Query']['Text']}")
             if 'Relationships' in block:
                 for relationship in block['Relationships']:
                     if relationship['Type'] == 'ANSWER':
@@ -80,18 +92,16 @@ def process_text_analysis(path):
                             # Find the answer block associated with the query
                             answer_block = next((b for b in blocks if b['Id'] == answer_id), None)
                             if answer_block and 'Text' in answer_block:
-                                print(f"    Answer: {answer_block['Text']}")
-                                # Store the answer in a key-value pair
-                                kvPairs[block['Query']['Text']] = answer_block['Text']
+                                #print(f"    Answer: {answer_block['Text']}")
+                                query_text = block['Query']['Text']
 
+                                # Append answers to the relevant list if the query is related to one of the multiple-response queries
+                                if query_text in kvPairs:
+                                    kvPairs[query_text].append(answer_block['Text'])
+                                else:
+                                    kvPairs[query_text] = answer_block['Text']
+    #print(kvPairs)
     return kvPairs
 
-# Example execution
-def main():
-     kvPairs = process_text_analysis("../RT_ESCROW_AND_TITLE_SEARCHES_8823460.pdf")
-     print(kvPairs)
-     
 
-if __name__ == "__main__":
-     main()
 

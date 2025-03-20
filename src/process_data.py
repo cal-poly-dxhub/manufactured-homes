@@ -152,7 +152,7 @@ def data_to_csv(data_list, csv_filename="output.csv"):
             sale_price = sale_info[0].replace("Price $", "").strip() if sale_info else ""
             transfer_date = sale_info[1] if len(sale_info) > 1 else ""
 
-            serials = data.get("serial_details", [])
+            serials = data.get("Serial Number", [])
             if not serials: 
                 writer.writerow([
                     data.get("Decal #", ""),
@@ -169,7 +169,7 @@ def data_to_csv(data_list, csv_filename="output.csv"):
                 ])
             else:
                 
-                writer.writerow([
+                row = [
                 data.get("Decal #", ""),
                 data.get("Manufacturer", ""),
                 data.get("Model", ""),
@@ -179,16 +179,23 @@ def data_to_csv(data_list, csv_filename="output.csv"):
                 data.get("Last Reported Registered Owner", ""),
                 sale_price,
                 transfer_date,
-                data.get("Situs Address", ""),
-                serials[0].get("Serial Number", ""),
-                serials[0].get("HUD Label/Insignia", ""),
-                serials[0].get("Length", ""),
-                serials[0].get("Width", ""),
-                serials[1].get("Serial Number", ""),
-                serials[1].get("HUD Label/Insignia", ""),
-                serials[1].get("Length", ""),
-                serials[1].get("Width", "")
-                ])
+                data.get("Situs Address", "")
+            ]
+            
+            # Add Serial Number 1, HUD Label/Insignia 1, Length 1, Width 1
+                row.append(data['Serial Number'][0] if len(data['Serial Number']) > 0 else "")
+                row.append(data['HUD Label/Insignia'][0] if len(data['HUD Label/Insignia']) > 0 else "")
+                row.append(data['Length'][0] if len(data['Length']) > 0 else "")
+                row.append(data['Width'][0] if len(data['Width']) > 0 else "")
+                
+                # Add Serial Number 2, HUD Label/Insignia 2, Length 2, Width 2
+                row.append(data['Serial Number'][1] if len(data['Serial Number']) > 1 else "")
+                row.append(data['HUD Label/Insignia'][1] if len(data['HUD Label/Insignia']) > 1 else "")
+                row.append(data['Length'][1] if len(data['Length']) > 1 else "")
+                row.append(data['Width'][1] if len(data['Width']) > 1 else "")
+                
+                # Write the row to the CSV
+                writer.writerow(row)
 
                     
 
