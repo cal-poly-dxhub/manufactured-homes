@@ -56,7 +56,8 @@ if uploaded_files:
                 temp_file_path = tmp_file.name
             
             # extract text from files and process them
-            response = extract_text_from_pdf(temp_file_path)
+            
+            #response = extract_text_from_pdf(temp_file_path)
             #extracted_table_data = process_textract_output(response)
             extracted_data = process_text_analysis(temp_file_path)
             #extracted_data.update(extracted_table_data)
@@ -106,6 +107,7 @@ if uploaded_files:
 
             for pdf_path in zip_file_paths:
                 # st.write(f"Found PDF file: {pdf_path}")
+                print(pdf_path)
                 
                
                 # extract text from files and process them

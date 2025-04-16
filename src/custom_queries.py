@@ -1,5 +1,6 @@
 import boto3
 from configparser import ConfigParser
+import fitz
 
 # Function to read adapter configuration
 def read_adapter_config(name, key, config_file="adapter.config"):
@@ -51,8 +52,14 @@ def process_text_analysis(path):
 
     # Open the image file
     with open(path, 'rb') as img_file:
-        img_bytes = img_file.read()
+        doc = fitz.open(path)
+        page = doc.load_page(0)  # First page only
+        pix = page.get_pixmap(dpi=300)
+        image_path = "first_page.png"
+        pix.save(image_path)
 
+        with open(image_path, "rb") as f:
+            img_bytes = f.read()
         # Call Textract analyze_document API with custom queries
         response = client.analyze_document(
             Document={'Bytes': img_bytes}, 
@@ -70,6 +77,8 @@ def process_text_analysis(path):
 
     # Parse the Textract response
     blocks = response['Blocks']
+    #print(blocks)
+
 
     kvPairs = {
         "Serial Number": [],
