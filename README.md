@@ -81,7 +81,9 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 ### Run the streamlit app
+```
 streamlit run src/app.py
+```
 
 ## Support
 For any queries or issues, please contact:
