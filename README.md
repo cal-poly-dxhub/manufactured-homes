@@ -1,11 +1,13 @@
 # Manufactured Homes Solution
 
 ## Collaboration
+
 Thanks for your interest in our solution. Having specific examples of replication and cloning allows us to continue to grow and scale our work. If you clone or download this repository, kindly shoot us a quick email to let us know you are interested in this work!
 
 [wwps-cic@amazon.com]
 
-# Disclaimers
+## Disclaimers
+
 **Customers are responsible for making their own independent assessment of the information in this document.**
 
 **This document:**
@@ -28,27 +30,31 @@ Thanks for your interest in our solution. Having specific examples of replicatio
 **All work produced is open source. More information can be found in the GitHub repo.**
 
 ## Authors
+
 - Dhvani Goel - [dhgoel@calpoly.edu]
 - Sharon Liang - [sliang19@calpoly.edu]
 
 ## Table of Contents
+
 - Overview
 - Deployment
 
 ## Overview
+
 The DxHub developed a web-based tool to extract key housing data from scanned PDFs using Amazon Textract. Designed to support the City of San Luis Obispo’s housing upgrade concierge service, this tool automates manual document review for faster, more reliable processing.
 
 The extractor includes the following features:
+
 - Upload scanned title and registration documents (PDF)
 - Extract key fields:
-  - Decal Number  
-  - Manufacturer & Model  
-  - Manufactured & First Sold Dates  
-  - Serial Numbers, HUD Labels, Length & Width  
-  - Record Conditions  
-  - Sale/Transfer Info (Price and Date)  
-  - Situs Address  
-  - Last Reported Registered Owner  
+  - Decal Number
+  - Manufacturer & Model
+  - Manufactured & First Sold Dates
+  - Serial Numbers, HUD Labels, Length & Width
+  - Record Conditions
+  - Sale/Transfer Info (Price and Date)
+  - Situs Address
+  - Last Reported Registered Owner
 - Handle incomplete documents gracefully (e.g. missing sale data or ownership)
 - View output instantly in structured JSON format
 - (Planned) Export results as CSV for integration into existing workflows
@@ -59,12 +65,15 @@ The extractor includes the following features:
 ## Steps to Deploy and Configure the System
 
 ### Prerequisites
-Before deployment, ensure you have: 
+
+Before deployment, ensure you have:
+
 - An AWS account
 - API credentials (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_SESSION_TOKEN)
 - Python 3 installed
 
 ### Clone the Repository
+
 - Install git using this command
   ```
   sudo yum install git
@@ -75,17 +84,22 @@ Before deployment, ensure you have:
   ```
 
 ### Install Python Dependencies
+
 ```
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
+
 ### Run the streamlit app
+
 ```
 streamlit run src/app.py
 ```
 
 ## Support
+
 For any queries or issues, please contact:
+
 - Dhvani Goel, Software Developer Intern - dhgoel@calpoly.edu
 - Sharon Liang, Software Developer Intern - sliang19@calpoly.edu
