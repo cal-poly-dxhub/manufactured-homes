@@ -1,2 +1,6 @@
 streamlit
 boto3
+pandas
+fitz
+PyMuPDF
+configparser
