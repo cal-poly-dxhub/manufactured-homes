@@ -1,6 +1,6 @@
 # Manufactured Homes Solution
 
-# Collaboration
+## Collaboration
 Thanks for your interest in our solution. Having specific examples of replication and cloning allows us to continue to grow and scale our work. If you clone or download this repository, kindly shoot us a quick email to let us know you are interested in this work!
 
 [wwps-cic@amazon.com]
@@ -28,15 +28,15 @@ Thanks for your interest in our solution. Having specific examples of replicatio
 **All work produced is open source. More information can be found in the GitHub repo.**
 
 ## Authors
-- Dhvani Goel - dhgoel@calpoly.edu
-- Sharon Liang - sliang19@calpoly.edu
+- Dhvani Goel - [dhgoel@calpoly.edu]
+- Sharon Liang - [sliang19@calpoly.edu]
 
 ## Table of Contents
 - Overview
 - Deployment
 
 ## Overview
-The DxHub developed a web-based tool to extract key housing data from scanned PDFs using AWS Textract. Designed to support the City of San Luis Obispo’s housing upgrade concierge service, this tool automates manual document review for faster, more reliable processing.
+The DxHub developed a web-based tool to extract key housing data from scanned PDFs using Amazon Textract. Designed to support the City of San Luis Obispo’s housing upgrade concierge service, this tool automates manual document review for faster, more reliable processing.
 
 The extractor includes the following features:
 - Upload scanned title and registration documents (PDF)
@@ -58,12 +58,13 @@ The extractor includes the following features:
 
 ## Steps to Deploy and Configure the System
 
-**Prerequisites**
-An AWS account
-API credentials (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_SESSION_TOKEN)
-Python 3 installed
+### Prerequisites
+Before deployment, ensure you have: 
+- An AWS account
+- API credentials (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_SESSION_TOKEN)
+- Python 3 installed
 
-**Clone the Repository**
+### Clone the Repository
 - Install git using this command
   ```
   sudo yum install git
@@ -72,7 +73,14 @@ Python 3 installed
   ```
   git clone https://github.com/cal-poly-dxhub/manufactured-homes.git
   ```
-**Run the streamlit app in the chatbot directory with**
+
+### Install Python Dependencies
+```
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+### Run the streamlit app
 streamlit run src/app.py
 
 ## Support
